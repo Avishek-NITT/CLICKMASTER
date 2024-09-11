@@ -11,7 +11,7 @@ ball_diameter = 20  # Diameter of the ball
 player_width = 20
 player_height = 100
 player_speed = 20  # Speed at which the player moves
-key_history = []
+pressed_keys = set()
 
 
 
@@ -106,35 +106,32 @@ def move_player(player, direction):
     elif direction == "down" and coords[3] < height:
         canvas.move(player, 0, player_speed)
 
-# def key_press(event):
-#     if event.keysym == "w":
-#         move_player(left_player, "up")
-#     elif event.keysym == "s":
-#         move_player(left_player, "down")
-#     elif event.keysym == "Up":
-#         move_player(right_player, "up")
-#     elif event.keysym == "Down":
-#         move_player(right_player, "down")
+
 
 root.geometry(f"{width}x{height}")
 
 
+
 def key_up(e) :
-    if  e.keycode in key_history :
-        key_history.pop(key_history.index(e.keycode))
+    pressed_keys.remove(str(e.keysym))
 
 def key_down(e):
-    if e.keycode not in key_history:
-        key_history.append(e.keycode)
-        if e.keysym == "w" :
-            move_player(left_player, "up")
-        elif e.keysym == "s" :
-            move_player(left_player, "down")
-        elif e.keysym == "Up" :
-            move_player(right_player, "up")
-        elif e.keysym == "Down" :
-            move_player(right_player, "down")
+    if e.keysym not in pressed_keys:
+        print(e.keysym)
+        pressed_keys.add(str(e.keysym))
 
+
+def execute_keys():
+    for i in pressed_keys:
+        if i == "Up":
+            move_player(right_player, "up")
+        elif i == "Down":
+            move_player(right_player, "down")
+        elif i == "w":
+            move_player(left_player, "up")
+        elif i == "s":
+            move_player(left_player, "down")
+    root.after(20, execute_keys)
 
 
 # Bind key press events
@@ -143,5 +140,6 @@ root.bind("<KeyRelease>", key_up)
 
 # Start the ball movement
 move_ball()
+execute_keys()
 
 root.mainloop()
